@@ -38,14 +38,28 @@ let staticServer = (() => {
   })()
 
   // Start up the server and serve out of various docroots.
-  let server = http.createServer((req, resp) => {
-    let docroot = req.headers['x-hoxy-static-docroot']
-    let pDocroot = new UrlPath(docroot)
-    let stat = getStatic(pDocroot.toSystemPath())
-    stat.serve(req, resp)
-  }).listen(0, 'localhost')
+  var promise = null
 
-  return server
+  function getServer() {
+    return new Promise((resolve, reject) => {
+
+      var server = http.createServer((req, resp) => {
+          let docroot = req.headers['x-hoxy-static-docroot']
+          let pDocroot = new UrlPath(docroot)
+          let stat = getStatic(pDocroot.toSystemPath())
+          stat.serve(req, resp)
+        }).listen(0, 'localhost', function() {
+          resolve(server)
+        })
+    })
+  }
+
+  return function() {
+    if(!promise)
+      promise = getServer()
+
+    return promise
+  }
 })()
 
 class ProvisionableRequest {
@@ -196,14 +210,16 @@ export default class Cycle extends EventEmitter {
         })
       }
       let staticResp = yield new Promise((resolve, reject) => {
-        let addr = staticServer.address()
-        http.get({
-          hostname: addr.address,
-          port: addr.port,
-          headers: headers,
-          path: pPath.toUrlPath(),
-        }, resolve)
-        .on('error', reject)
+        return staticServer().then(function(server) {
+          let addr = server.address()
+          http.get({
+            hostname: addr.address,
+            port: addr.port,
+            headers: headers,
+            path: pPath.toUrlPath(),
+          }, resolve)
+          .on('error', reject)
+        })
       })
       let code = staticResp.statusCode
         , useResponse
