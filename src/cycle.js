@@ -9,7 +9,6 @@ import streams from './streams'
 import awate from 'await'
 import mkdirp from 'mkdirp'
 import _ from 'lodash'
-import { Server as DocRootServer } from 'node-static'
 import http from 'http'
 import https from 'https'
 import url from 'url'
@@ -23,44 +22,7 @@ import adapt from 'ugly-adapter'
 import wait from './wait'
 import task from './task'
 import UrlPath from './url-path'
-
-let staticServer = (() => {
-
-  let getStatic = (() => {
-    let statics = {}
-    return docroot => {
-      let stat = statics[docroot]
-      if (!stat) {
-        stat = statics[docroot] = new DocRootServer(docroot)
-      }
-      return stat
-    }
-  })()
-
-  // Start up the server and serve out of various docroots.
-  var promise = null
-
-  function getServer() {
-    return new Promise((resolve, reject) => {
-
-      var server = http.createServer((req, resp) => {
-          let docroot = req.headers['x-hoxy-static-docroot']
-          let pDocroot = new UrlPath(docroot)
-          let stat = getStatic(pDocroot.toSystemPath())
-          stat.serve(req, resp)
-        }).listen(0, 'localhost', function() {
-          resolve(server)
-        })
-    })
-  }
-
-  return function() {
-    if(!promise)
-      promise = getServer()
-
-    return promise
-  }
-})()
+import staticServer from './static-server'
 
 class ProvisionableRequest {
 
