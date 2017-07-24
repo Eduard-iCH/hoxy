@@ -9,7 +9,7 @@
   },
   "main": "./lib/main",
   "scripts": {
-    "prepublish": "npm run compile",
+    "prepare": "npm run compile",
     "test": "mocha --compilers js:babel/register --timeout 3000",
     "compile": "babel src --out-dir lib --optional runtime",
     "lint": "eslint ./src",
