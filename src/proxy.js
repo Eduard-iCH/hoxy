@@ -310,6 +310,10 @@ export default class Proxy extends EventEmitter {
     return this._server.address.apply(this._server, arguments)
   }
 
+  getPID() {
+    return process.pid;
+  }
+
   log(events, cb) {
     let listenTo = {}
     events.split(/\s/)
