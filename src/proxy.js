@@ -290,12 +290,31 @@ export default class Proxy extends EventEmitter {
         throw new Error('cannot intercept ' + opts.as + ' in phase ' + phase)
       }
     }
+
+    if (opts.groupId != null) {
+      intercept.groupId = String(opts.groupId)
+    }
+
     intercept = wrapAsync(intercept)
     intercept = asIntercept(opts, intercept) // TODO: test asIntercept this, args, async
     intercept = otherIntercept(opts, intercept) // TODO: test otherIntercept this, args, async
     this._intercepts[phase].push(intercept)
   }
 
+  removeInterceptsByGroupID(groupId) {
+    groupId = String(groupId)
+    for (let phase in this._intercepts) {
+      let phaseInterceptors = this._intercepts[phase];
+      let i = phaseInterceptors.length
+
+      while (i--) {
+        if (phaseInterceptors[i].groupId === groupId) {
+          phaseInterceptors.splice(i, 1)
+        }
+      }
+    }
+  }
+  
   close() {
     this._server.close.apply(this._server, arguments)
     staticServer.close()
