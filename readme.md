@@ -41,6 +41,7 @@ Notable changes:
  * Undocumented `hoxy.forever()` function goes away.
 
 ## Release notes:
+* **20 Apr 2018**  Added Proxy.kill() function - clear all proxy-related stuff and kill all child process.
 * **22 Jul 2017**  Switch to prepare in package.json. Thanks [@kdbhiggins](https://github.com/kdbhiggins).
 * **06 Apr 2017**  Static server refactored - fix server not being closed after proxy stop. Thanks Will Alexander [(src?)](https://github.com/zestyzesty).
 **================END OF EXTRAS================**

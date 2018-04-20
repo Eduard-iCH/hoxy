@@ -301,6 +301,11 @@ export default class Proxy extends EventEmitter {
     staticServer.close()
   }
 
+  kill() {
+    this.close();
+    process.exit(0);
+  }
+
   address() {
     return this._server.address.apply(this._server, arguments)
   }
