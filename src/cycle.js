@@ -9,7 +9,6 @@ import streams from './streams'
 import awate from 'await'
 import mkdirp from 'mkdirp'
 import _ from 'lodash'
-import { Server as DocRootServer } from 'node-static'
 import http from 'http'
 import https from 'https'
 import url from 'url'
@@ -23,30 +22,7 @@ import adapt from 'ugly-adapter'
 import wait from './wait'
 import task from './task'
 import UrlPath from './url-path'
-
-let staticServer = (() => {
-
-  let getStatic = (() => {
-    let statics = {}
-    return docroot => {
-      let stat = statics[docroot]
-      if (!stat) {
-        stat = statics[docroot] = new DocRootServer(docroot)
-      }
-      return stat
-    }
-  })()
-
-  // Start up the server and serve out of various docroots.
-  let server = http.createServer((req, resp) => {
-    let docroot = req.headers['x-hoxy-static-docroot']
-    let pDocroot = new UrlPath(docroot)
-    let stat = getStatic(pDocroot.toSystemPath())
-    stat.serve(req, resp)
-  }).listen(0, 'localhost')
-
-  return server
-})()
+import staticServer from './static-server'
 
 class ProvisionableRequest {
 
@@ -196,14 +172,16 @@ export default class Cycle extends EventEmitter {
         })
       }
       let staticResp = yield new Promise((resolve, reject) => {
-        let addr = staticServer.address()
-        http.get({
-          hostname: addr.address,
-          port: addr.port,
-          headers: headers,
-          path: pPath.toUrlPath(),
-        }, resolve)
-        .on('error', reject)
+        return staticServer().then(function(server) {
+          let addr = server.address()
+          http.get({
+            hostname: addr.address,
+            port: addr.port,
+            headers: headers,
+            path: pPath.toUrlPath(),
+          }, resolve)
+          .on('error', reject)
+        })
       })
       let code = staticResp.statusCode
         , useResponse

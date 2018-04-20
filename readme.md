@@ -29,7 +29,7 @@ proxy.intercept({
 });
 ```
 
-## Version 3.0
+## Version 3.0 + EXTRAS
 
 Hoxy has released version 3.0.
 This release simplifies the API and better supports ES6.
@@ -41,7 +41,9 @@ Notable changes:
  * Undocumented `hoxy.forever()` function goes away.
 
 ## Release notes:
-
+* **22 Jul 2017**  Switch to prepare in package.json. Thanks [@kdbhiggins](https://github.com/kdbhiggins).
+* **06 Apr 2017**  Static server refactored - fix server not being closed after proxy stop. Thanks Will Alexander [(src?)](https://github.com/zestyzesty).
+**================END OF EXTRAS================**
 * **3.2.2** Merged [PR #95](https://github.com/greim/hoxy/pull/95). Thanks [devjerry](https://github.com/devjerry).
 * **3.2.1** Fixed test failures regarding `content-length` and `transfer-encoding` headers.
 * **3.2.0** Better error handling. Added `query` getter/setter to request.

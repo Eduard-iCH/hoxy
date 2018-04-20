@@ -15,6 +15,7 @@ import { SNISpoofer } from './sni-spoofer'
 import net from 'net'
 import https from 'https'
 import { ThrottleGroup } from 'stream-throttle'
+import staticServer from './static-server'
 
 // TODO: test all five for both requet and response
 let asHandlers = {
@@ -241,6 +242,8 @@ export default class Proxy extends EventEmitter {
         }, fromServer => {
           toClient.writeHead(fromServer.statusCode, fromServer.headers)
           fromServer.pipe(toClient)
+        }).on('error', function(e) {
+          console.error('proxy error', e);
         })
         fromClient.pipe(toServer)
       })
@@ -295,6 +298,7 @@ export default class Proxy extends EventEmitter {
 
   close() {
     this._server.close.apply(this._server, arguments)
+    staticServer.close()
   }
 
   address() {
