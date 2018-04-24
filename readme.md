@@ -41,6 +41,7 @@ Notable changes:
  * Undocumented `hoxy.forever()` function goes away.
 
 ## Release notes:
+* **24 Apr 2018**  Fixes for "unhandledRejection" error. Properly handling for errors like ENOTFOUND / ECONNREFUSED / ... - no more timeouts [[issue]](https://github.com/greim/hoxy/issues/69).
 * **20 Apr 2018**  Added Proxy.removeInterceptsByGroupID(sGroupId) function - antipode to Proxy.intercept(). Used to remove interceptors, matched by new groupId param.
 * **20 Apr 2018**  Added Proxy.getPID() function - get proxy process ID.
 * **20 Apr 2018**  Added Proxy.kill() function - clear all proxy-related stuff and kill all child process.

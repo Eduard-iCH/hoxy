@@ -172,7 +172,23 @@ export default class Proxy extends EventEmitter {
             message: `server fetch skipped for ${req.fullUrl()}`,
           })
         } else {
-          let responseFromServer = yield partiallyFulfilledRequest.receive()
+          try { var responseFromServer = yield partiallyFulfilledRequest.receive() }
+          catch(ex) {
+            this.emit('log', {
+              level: 'warn',
+              message: `connection error: ` + ex.message,
+            })
+
+            if (typeof opts.connectErrClbk === 'function') {
+              try {
+                yield opts.connectErrClbk(ex, req._data, toClient)
+              } catch(err) {}
+            }
+
+            toClient.end()
+            return
+          }
+
           resp._setHttpSource(responseFromServer)
         }
         try { yield this._runIntercepts('response', cycle) }
